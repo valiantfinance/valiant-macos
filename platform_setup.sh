@@ -8,9 +8,6 @@
 # Install XCode CLI tools - We require this for GIT
 sudo xcode-select --install
 
-# Install Oh My Zsh - https://ohmyz.sh/
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
 # Install Homebrew - Package manager for macOS https://brew.sh/
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
