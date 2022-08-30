@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# ---------------------------------------------------------------------------- #
+# Valiant Platform Development Environment Setup Script
+#
+# You should run this as part of the setup process described here:
+# https://www.notion.so/valiant/Development-Environment-Setup-9ce1f474312241dbb11ad52bf95320ab
+# ---------------------------------------------------------------------------- #
+
 function append_config() {
   if [ ! -f $1 ]
   then
@@ -48,12 +55,15 @@ echo "Installing Brewfile..."
 brew bundle
 
 echo "Load NVM when the shell starts..."
-cp -np ./.start_nvm ~
+cp -np .start_nvm ~
 append_file "source ~/.start_nvm"
-source ./.start_nvm
+source .start_nvm
 
 echo "Add Heroku Multiple Accounts Plugin..."
 heroku plugins:install heroku-accounts
+
+echo "Copying pry config..."
+cp -np .pryrc ~
 
 echo "(Re)starting PostgreSQL and Redis..."
 brew services restart postgresql
