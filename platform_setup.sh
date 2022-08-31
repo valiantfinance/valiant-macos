@@ -1,62 +1,70 @@
+#!/usr/bin/env bash
+
 # ---------------------------------------------------------------------------- #
-# Valiant Platform application setup script.
+# Valiant Platform Development Environment Setup Script
+#
+# You should run this as part of the setup process described here:
+# https://www.notion.so/valiant/Development-Environment-Setup-9ce1f474312241dbb11ad52bf95320ab
 # ---------------------------------------------------------------------------- #
 
-# Install packages and services
-# https://www.notion.so/valiant/1-Install-packages-and-services-8a7e7d1dcaa74d829256ca4b4772fae2
+function append_config() {
+  if [ ! -f $1 ]
+  then
+    return
+  fi
+  if grep -q "$2" "$1"
+  then
+    return
+  fi
+  echo "Appending to $1: $2"
+  echo >> "$1"
+  echo "# Added by platform_setup.sh" >> "$1"
+  echo "$2" >> "$1"
+}
 
-# Install XCode CLI tools - We require this for GIT
-sudo xcode-select --install
+function append_file() {
+  append_config "$HOME/.zshrc" "$1"
+  append_config "$HOME/.bash_profile" "$1"
+}
 
-# Install Homebrew - Package manager for macOS https://brew.sh/
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep -q "version"
+then
+  echo "XCode CLI Tools already installed!"
+else
+  echo "Installing XCode CLI Tools..."
+  sudo xcode-select --install
+fi
 
-# Install Heroku CLI & Heroku Multiple Accounts Plugin
-brew install heroku/brew/heroku
+if command -v brew | grep -q "brew"
+then
+  echo "Homebrew already installed!"
+else
+  echo "Installing Homebrew..."
+  curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh -o brew.sh
+  source brew.sh
+fi
+
+echo "Creating NVM's working directory if it doesn't exist..."
+mkdir -p ~/.nvm
+
+echo "Load Homebrew when the shell starts..."
+append_file 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+echo "Installing Brewfile..."
+brew bundle
+
+echo "Load NVM when the shell starts..."
+cp -np .start_nvm ~
+append_file "source ~/.start_nvm"
+source .start_nvm
+
+echo "Add Heroku Multiple Accounts Plugin..."
 heroku plugins:install heroku-accounts
 
-# Install PostgreSQL - Database
-brew install postgresql
-brew services start postgresql
+echo "Copying pry config..."
+cp -np .pryrc ~
 
-# Install Redis - In-memory data structure store
-brew install redis
-brew services start redis
-
-# Install NVM - Node version manager allows us to easily change node versions
-brew install nvm
-
-# You should create NVM's working directory if it doesn't exist:
-[ -d ~/.nvm ] || mkdir ~/.nvm
-
-# Add the following to ~/.zshrc or your desired shell configuration file:
-echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
-# This loads nvm
-echo '  [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"' >> ~/.zshrc
- # This loads nvm bash_completion
-echo '  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"' >> ~/.zshrc
-
-# re-source your terminal
-source ~/.zshrc
-
-# Install Node using NVM
-# Install node version
-nvm install 16.4.1
-# Set node version
-nvm use 16.4.1
-# Set as system default
-nvm alias default 16.4.1
-
-# Install puma-dev - Development server with HTTPS support
-brew install puma/puma/puma-dev
-
-# Install Yarn - Package manager for Node apps
-brew install yarn
-
-# Install and configure Pry for a better rails console experience
-gem install pry
-# Add the following lines to the file ~/.pryrc
-echo 'Pry.config.pager = false' >> ~/.pryrc
-echo 'require "awesome_print"' >> ~/.pryrc
-echo 'AwesomePrint.pry!' >> ~/.pryrc
+echo "(Re)starting PostgreSQL and Redis..."
+brew services restart postgresql
+brew services restart redis
