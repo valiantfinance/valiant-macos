@@ -52,7 +52,7 @@ append_file 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 echo "Installing Brewfile..."
-brew bundle
+brew bundle --no-upgrade
 
 echo "Load NVM when the shell starts..."
 cp -np .start_nvm ~
