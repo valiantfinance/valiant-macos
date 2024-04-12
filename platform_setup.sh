@@ -44,20 +44,12 @@ else
   source brew.sh
 fi
 
-echo "Creating NVM's working directory if it doesn't exist..."
-mkdir -p ~/.nvm
-
 echo "Load Homebrew when the shell starts..."
 append_file 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 echo "Installing Brewfile..."
 brew bundle --no-upgrade
-
-echo "Load NVM when the shell starts..."
-cp -np .start_nvm ~
-append_file "source ~/.start_nvm"
-source .start_nvm
 
 echo "Add Heroku Multiple Accounts Plugin..."
 heroku plugins:install heroku-accounts
