@@ -6,6 +6,6 @@ tap "puma/puma"
 
 brew "postgresql@13", restart_service: true
 brew "redis", restart_service: true
-brew "yarn"
+brew "pnpm"
 brew "heroku"
 brew "puma-dev"
