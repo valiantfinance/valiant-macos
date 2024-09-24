@@ -49,7 +49,7 @@ append_file 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 echo "Installing Brewfile..."
-brew bundle --no-upgrade
+brew bundle --no-upgrade --force
 
 echo "Add Heroku Multiple Accounts Plugin..."
 heroku plugins:install heroku-accounts
@@ -57,6 +57,6 @@ heroku plugins:install heroku-accounts
 echo "Copying pry config..."
 cp -np .pryrc ~
 
-echo "(Re)starting PostgreSQL and Redis..."
+echo "Restarting PostgreSQL and Redis..."
 brew services restart postgresql
 brew services restart redis
